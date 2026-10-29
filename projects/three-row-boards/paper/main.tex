@@ -1,0 +1,185 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{The Largest Right-Isosceles-Free Subset of a Three-Row Lattice Board}
+\author{Mael Shawaly}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $a(3,n)$ be the largest number of lattice points that can be chosen from a board with three rows and $n$ columns so that no three chosen points form a non-degenerate right isosceles triangle. We prove that $a(3,n)=n+2$ for every $n\ge 4$. The lower bound is an explicit construction valid for all $n$. The upper bound is proved by a potential-function argument on a finite graph of four-column states. The finite part of this argument is a certificate that we verify by computer; the certificate is a short table that anyone can check independently. The same method yields exact values of $a(m,n)$ for small boards, which we report as computed data. The square-grid version of the problem (OEIS A271906) is not addressed here.
+\end{abstract}
+
+\section{Introduction and related work}
+
+For $n\ge 1$ let $a(n)$ denote the largest number of points of the $n\times n$ grid that contain no right isosceles triangle, a problem whose values for $n\le 11$ are recorded in OEIS sequence A271906. Lower bounds for $n=12,13,14,15$ (29, 32, 36, 38) are recorded in the comments of that entry by R.~Israel (2016) and G.~Resta (2016). The asymptotic behaviour of the square problem is studied by Bloom and by Pilatte, whose upper bound $O(n^2/(\log n)^{1+\varepsilon})$ is quoted in Jánosik et al.~\cite{janosik} and in Károlyi and Solymosi~\cite{karolyi}. Related no-isosceles problems on grids are discussed in~\cite{janosik} and in the PatternBoost paper of Charton, Ellenberg, Wagner and Williamson~\cite{patternboost}.
+
+We searched OEIS, arXiv, and the sources above for results on rectangular boards with a fixed number of rows. We found no statement of $a(3,n)$ or of the rectangular values reported in Section~\ref{sec:computed}. Our search was not exhaustive (for example, we could not query zbMATH successfully), so we do not claim that the result is new without further checking.
+
+\section{Preliminaries}
+
+A \emph{board} with $m$ rows and $n$ columns is the set of lattice points $(x,y)$ with $0\le x\le n-1$ and $0\le y\le m-1$. A triple $\{A,B,C\}$ of points is a \emph{right isosceles triangle} if there is a vertex $V$ among them such that the two other points $P,Q$ satisfy $P-V\perp Q-V$ and $|P-V|=|Q-V|\neq 0$. A set of points is \emph{admissible} if it contains no such triple. Let $a(m,n)$ be the maximum size of an admissible subset of the $m\times n$ board.
+
+For a three-row board, write the content of column $j$ as a \emph{mask} $c_j\in\{0,\dots,7\}$, where bit $y$ of $c_j$ is set exactly when the point $(j,y)$ is chosen. Then $\operatorname{pop}(c)$ is the number of chosen points in a column. We write $\psi(s)=\sum_i\operatorname{pop}(c_i)$ for a tuple $s=(c_1,\dots,c_k)$.
+
+\begin{lemma}[Horizontal extent]\label{lem:extent}
+Every right isosceles triangle with vertices on a three-row board has $x$-coordinates spanning at most $4$ consecutive integers.
+\end{lemma}
+
+\begin{proof}
+Let the right angle be at $P$ and let the legs be $u=(p,q)$ and $w=\varepsilon(-q,p)$ with $\varepsilon\in\{+1,-1\}$. Relative to $P$ the three vertices have $y$-coordinates $0$, $q$ and $\varepsilon p$. They lie in an interval of length at most $2$ containing $0$, so $|p|\le 2$ and $|q|\le 2$. The relative $x$-coordinates are $0$, $p$ and $-\varepsilon q$, all in $[-2,2]$. Hence the $x$-span is at most $4$.
+\end{proof}
+
+\begin{lemma}[Locality]\label{lem:local}
+Let $n\ge 5$. A set $S$ on the three-row $n$-column board is admissible if and only if every set of five consecutive columns of $S$ is admissible.
+\end{lemma}
+
+\begin{proof}
+A restriction of an admissible set to a sub-board is admissible, which gives one direction. Conversely, by Lemma~\ref{lem:extent} each triangle lies in five consecutive columns, which gives the other.
+\end{proof}
+
+\section{The state graph}
+
+A \emph{state} is an admissible $4$-tuple of masks $s=(c_1,c_2,c_3,c_4)$. A \emph{transition} $s\to t$ with $t=(c_2,c_3,c_4,c_5)$ is \emph{allowed} when the $5$-tuple $(c_1,\dots,c_5)$ is admissible. Its \emph{weight} is $\operatorname{pop}(c_5)$. By Lemma~\ref{lem:local}, an admissible set on the $3\times n$ board with $n\ge 4$ is the same as a path $s_1\to\cdots\to s_{n-3}$ of allowed transitions, together with the first state. There are $443$ states and $1736$ admissible $5$-tuples.
+
+\begin{proposition}[Potential certificate]\label{prop:cert}
+There is a function $\Phi$ from the states to $\{0,1,2\}$ such that:
+\begin{enumerate}[label=(\alph*)]
+\item $\Phi(s)\ge 0$ for every state $s$;
+\item for every allowed transition $s\to t$ with new column $c_5$,
+  \[\Phi(s)\ \ge\ \operatorname{pop}(c_5)-1+\Phi(t);\]
+\item for every state $s$, $\ \psi(s)+\Phi(s)\le 6$.
+\end{enumerate}
+\end{proposition}
+
+A concrete $\Phi$ is the longest-path potential: $\Phi(s)$ is the supremum, over allowed paths starting at $s$, of the sum of $\operatorname{pop}(\text{new column})-1$. The supremum is finite because no cycle of the state graph has mean weight larger than $1$. The values found are $0$, $1$ and $2$, with $\max_s(\psi(s)+\Phi(s))=6$ attained at some states. The table is supplied as \texttt{phi3.json} with a SHA-256 hash given in Section~\ref{sec:verif}. Proposition~\ref{prop:cert} is verified by computer, as described in Section~\ref{sec:verif}.
+
+\begin{theorem}\label{thm:upper}
+For every $n\ge 4$, $a(3,n)\le n+2$.
+\end{theorem}
+
+\begin{proof}
+Let $S$ be admissible on the $3\times n$ board, and let $s_1\to\cdots\to s_k$ be its state path, where $k=n-3$. Every consecutive pair is an allowed transition, by Lemma~\ref{lem:local} (for $n=4$ there are no transitions and $k=1$). Write $w_i$ for the weight of the $i$-th transition. Then the total number of points is
+\[
+|S| \;=\; \psi(s_1)+\sum_{i=1}^{k-1} w_i \;=\; \psi(s_1)+(n-4)+\sum_{i=1}^{k-1}(w_i-1).
+\]
+By (b) each term satisfies $w_i-1\le \Phi(s_i)-\Phi(s_{i+1})$, so the sum telescopes:
+\[
+\sum_{i=1}^{k-1}(w_i-1)\le \Phi(s_1)-\Phi(s_k).
+\]
+Combining these with (c) for $s_1$ and (a) for $s_k$ gives
+\[
+|S|\le (n-4)+\bigl(\psi(s_1)+\Phi(s_1)\bigr)-\Phi(s_k)\le (n-4)+6-0=n+2.\qedhere
+\]
+\end{proof}
+
+\section{Lower bound}
+
+\begin{theorem}\label{thm:lower}
+For every $n\ge 4$, $a(3,n)\ge n+2$.
+\end{theorem}
+
+\begin{proof}
+Let $P=(0,0,5,5)$, where $5=\{\text{rows }0\text{ and }2\}$. Consider the following admissible column sequences, each with $n+2$ points.
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+$n$ & column masks \\
+\midrule
+$4$ & $(7,0,0,7)$ \\
+$5$ & $(7,0,2,4,5)$ \\
+$6$ & $(7,0,2,2,0,7)$ \\
+$7$ & $(7,0,2,4,4,4,3)$ \\
+$8$ & $(7,0,0,7,0,0,5,5)$ \\
+$9$ & $(7,0,2,1,5,0,0,5,5)$ \\
+$10$ & $(3,4,1,1,4,3,0,0,5,5)$ \\
+$11$ & $(6,1,1,1,1,4,3,0,0,5,5)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For $n\ge 8$ let $b\in\{8,9,10,11\}$ satisfy $b\equiv n\pmod 4$. Take the sequence for $b$ and append $(n-b)/4$ copies of $P=(0,0,5,5)$. The result has $n$ columns and $(b+2)+(n-b)=n+2$ points. The sequences for $b=8,\dots,11$ end in $P$.
+
+Admissibility follows from Lemma~\ref{lem:local}. A five-column window inside a base sequence is admissible because the base is. A window inside the periodic part is a window of the infinite word $P^\infty=\cdots 0,0,5,5,0,0,5,5\cdots$. Its four phases are $(0,0,5,5,0)$, $(0,5,5,0,0)$, $(5,5,0,0,5)$ and $(5,0,0,5,5)$, and each is admissible. Any window that is not of these two kinds starts among the last four columns of the base. Those four columns are $P$, so such a window is also a window of $P^\infty$.
+\end{proof}
+
+\begin{corollary}\label{cor:main}
+For every $n\ge 4$, $a(3,n)=n+2$. For small $n$, $a(3,1)=3$, $a(3,2)=4$ and $a(3,3)=4$.
+\end{corollary}
+
+\begin{proof}
+The equality for $n\ge 4$ follows from Theorems~\ref{thm:upper} and~\ref{thm:lower}. The small values are computed exactly (Section~\ref{sec:computed}); $a(3,1)=3$ holds because the points of one column are collinear.
+\end{proof}
+
+\section{Computational verification}\label{sec:verif}
+
+The argument rests on the following computations, each of which we ran with two independent codes or against an independent check.
+
+\begin{enumerate}[label=(\arabic*)]
+\item \emph{Triangle enumeration.} The 18 normalised shapes of right isosceles triangles on a three-row board were enumerated. Lemma~\ref{lem:extent} agrees with the enumeration.
+\item \emph{Dynamic program for $a(3,n)$.} A dynamic program over 4-column states gives $a(3,n)=n+2$ for all $4\le n\le 60$. It agrees with a brute-force search over all column sequences for $n=4,5,6$.
+\item \emph{Constraint-programming cross-check.} CP-SAT computes $a(3,n)$ exactly for $4\le n\le 18$, with the bound closed at $n+2$ in every case.
+\item \emph{Certificate audit.} The conditions (a)--(c) of Proposition~\ref{prop:cert} were checked for all $443$ states and all $1736$ admissible $5$-tuples, using a separate implementation that tests every triple directly against the definition. The maximum of $\psi+\Phi$ is $6$.
+\item \emph{Construction audit.} The sets of Theorem~\ref{thm:lower} were checked for $4\le n\le 120$ by testing every triple of chosen points.
+\end{enumerate}
+
+The certificate file \texttt{phi3.json} has SHA-256 hash
+\begin{center}\small\texttt{c32cfb1a5b4c7f2a60d4520fa11840e5665fb87fdc01f27ad9f740f96e34d82d}\end{center}
+
+\section{Computed values}\label{sec:computed}
+
+The values below were computed by constraint programming (CP-SAT), with $m$ rows and $n$ columns, $n\ge m$, and every entry proved optimal by the solver. Entries for $m=3$, $n\ge 4$ agree with Corollary~\ref{cor:main}.
+
+{\footnotesize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{c|cccccccccccccccc}
+\toprule
+$m\backslash n$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+\midrule
+1 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & & & & & & & & \\
+2 & & 2 & 4 & 4 & 6 & 6 & 8 & 8 & 10 & 10 & 12 & 12 & 14 & 14 & 16 & 16\\
+3 & & & 4 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18\\
+4 & & & & 6 & 8 & 9 & 10 & 12 & 13 & 14 & 16 & 16 & 18 & 19 & & \\
+5 & & & & & 9 & 10 & 12 & 13 & 15 & 16 & 17 & 18 & & & & \\
+\bottomrule
+\end{tabular}}
+
+For $m=2$, the values satisfy $a(2,n)=2\lceil n/2\rceil$, which has the following elementary proof. Any $2\times 2$ block of the board holds at most two chosen points, since any three corners of a unit square form a right isosceles triangle. Splitting the columns into consecutive pairs gives the upper bound. The set of all points in odd-numbered columns (with $x$ even) is admissible, because its $x$-differences are even and its $y$-differences are in $\{-1,0,1\}$, which forces the legs to be zero. We do not claim this two-row result is new.
+
+\section{Discussion and limitations}
+
+\begin{itemize}[leftmargin=*]
+\item The upper bound is computer-assisted. The potential $\Phi$ is a finite certificate: its validity is a finite check, and we give two independent implementations of that check. A human-readable proof of Proposition~\ref{prop:cert}, or a closed form for $\Phi$, would be a stronger result, and we do not have one.
+\item The result is limited to three rows. The same method applies to any fixed number of rows $m$ in principle, but the state space grows quickly, and we do not analyse larger $m$ here.
+\item The square problem for $n\ge 12$ is not addressed.
+\item The novelty claim is limited to our search. We did not find the result in the sources listed in Section~1. We have not carried out a complete literature review.
+\end{itemize}
+
+\paragraph{Status.} This is an independent computational study. It has not been peer reviewed, and the novelty of the result has not been established: a literature search found no prior statement of $a(3,n)$, but the search was not exhaustive (Section~1).
+
+\paragraph{AI assistance.}
+The computational experiments, the search for the potential, and parts of the write-up were carried out with the assistance of an AI agent. All claims were checked by the authors via the independent verification steps above. The author used an AI coding and writing assistant to write and debug the scripts, to draft parts of the text, and to search the literature. Every computational claim was rerun by the author with the scripts in the supplement, and every mathematical argument was checked by the author. The author takes full responsibility for the content.
+
+\begin{thebibliography}{9}
+\bibitem{janosik} M.~Jánosik, A.~Nádor, Z.~L.~Nagy, L.~B.~Simon. \emph{Avoiding configurations of small size in the square grid}. arXiv:2601.14465 (2026).
+\bibitem{karolyi} G.~Károlyi, J.~Solymosi. \emph{A Salem--Spencer-type construction for large subsets of integer grids with no isosceles right triangles}. arXiv:2607.22828 (2026).
+\bibitem{patternboost} F.~Charton, J.~S.~Ellenberg, A.~Z.~Wagner, G.~Williamson. \emph{PatternBoost: Constructions in mathematics with a little help from AI}. arXiv:2411.00566 (2024).
+\bibitem{oeis} OEIS Foundation. Sequence A271906: largest subset of the $n\times n$ grid with no right isosceles triangle. Comments by R.~Israel (2016) and G.~Resta (2016).
+\end{thebibliography}
+
+\end{document}

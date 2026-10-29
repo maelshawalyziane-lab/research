@@ -1,0 +1,2 @@
+n=1 best=1 bound=1 optimal=True
+[(0, 0)]
