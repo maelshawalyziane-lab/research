@@ -1,0 +1,322 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Right-isosceles-free subsets of rectangular boards},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Right-isosceles-free subsets of rectangular boards}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Right-Isosceles-Free Subsets of Rectangular Grids: Exact Values
+for Narrow
+Boards}\label{right-isosceles-free-subsets-of-rectangular-grids-exact-values-for-narrow-boards}
+
+\subsection{Abstract}\label{abstract}
+
+Let a(m,n) be the largest number of points of an m×n grid (m rows, n
+columns of lattice points) that contain no three points forming a
+non-degenerate right isosceles triangle. We prove a closed form for
+two-row boards, a(2,n) = 2⌈n/2⌉ (Theorem 1), and give a short proof of
+the one-row case. We compute a(m,n) exactly by constraint programming
+for many small boards, including all m ≤ 4 with n ≤ 8 and m = 5 with n ≤
+12, and for m = 3 with n ≤ 18. For three-row boards we prove a(3,n) =
+n+2 for n ≥ 4 (computer-assisted upper bound; see the three-row-boards
+project (paper/main.tex)). We did not find a table of these rectangular
+values in OEIS, but the check was limited (see Section 5).
+
+\subsection{1. Definitions}\label{definitions}
+
+Points are lattice points (x, y) with 0 ≤ x \textless{} n and 0 ≤ y
+\textless{} m. Three points form a right isosceles triangle if, for some
+vertex V and the other two vertices P and Q, the vectors P−V and Q−V are
+perpendicular and of equal nonzero length. A set is \emph{admissible} if
+it contains no such triple. Write a(m,n) for the maximum size of an
+admissible subset.
+
+\subsection{2. Results}\label{results}
+
+\subsubsection{Theorem 1 (two-row and one-row
+boards)}\label{theorem-1-two-row-and-one-row-boards}
+
+For all n ≥ 1:
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\tightlist
+\item
+  a(1,n) = n,
+\item
+  a(2,n) = 2⌈n/2⌉.
+\end{enumerate}
+
+\textbf{Proof.}
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\item
+  All points of a one-row board are collinear, and a non-degenerate
+  triangle has three non-collinear vertices. So no triple is forbidden,
+  and a(1,n) = n.
+\item
+  \emph{Upper bound.} Split the columns into consecutive pairs \{1,2\},
+  \{3,4\}, \ldots{} If n is odd, the last column is alone. Each pair of
+  columns forms a 2×2 block of lattice points. Any three of the four
+  corners of an axis-parallel unit square form a right isosceles
+  triangle. So each 2×2 block contains at most two points of an
+  admissible set. Each leftover single column (when n is odd) contains
+  at most two points. Summing over the ⌈n/2⌉ blocks or columns gives
+  \textbar S\textbar{} ≤ 2⌈n/2⌉.
+\end{enumerate}
+
+\emph{Lower bound.} Take S = \{(x,y) : x even, 0 ≤ x \textless{} n, y ∈
+\{0,1\}\}. This has 2⌈n/2⌉ points. Suppose P, Q, R ∈ S form a right
+isosceles triangle with right angle at P. Write u = Q − P = (a,b) and R
+− P = (−b,a) (the rotation of u by 90°, up to sign; the other
+orientation is handled the same way). All points of S have even
+x-coordinate, so the x-differences a and −b are even. All points of S
+have y ∈ \{0,1\}, so b and a lie in \{−1, 0, 1\}. Hence a and b are even
+and lie in \{−1,0,1\}, so a = b = 0. Then Q = P, which is degenerate. So
+S is admissible. ∎
+
+\subsubsection{Computed values}\label{computed-values}
+
+The table lists values a(m,n) with m rows and n columns, for n ≥ m (the
+cases computed). Every entry shown was reported OPTIMAL by the solver,
+so the upper and lower bounds met. Entries for the 3×19 and 3×20 boards,
+which the solver did not close, are discussed separately below.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 32\tabcolsep) * \real{0.0588}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+m ~n
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+7
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+8
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+10
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+12
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+13
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+14
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+15
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & & & & & & & & \\
+2 & & 2 & 4 & 4 & 6 & 6 & 8 & 8 & 10 & 10 & 12 & 12 & 14 & 14 & 16 &
+16 \\
+3 & & & 4 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 &
+18 \\
+4 & & & & 6 & 8 & 9 & 10 & 12 & 13 & 14 & 16 & 16 & 18 & 19 & & \\
+5 & & & & & 9 & 10 & 12 & 13 & 15 & 16 & 17 & 18 & & & & \\
+\end{longtable}
+
+The m = 3 row continues: a(3,19) ≥ 21 and a(3,20) ≥ 22 were found but
+not proved optimal (the solver's upper bounds were 37 and 39). These are
+consistent with the conjecture below.
+
+\subsubsection{Observations and
+conjecture}\label{observations-and-conjecture}
+
+\textbf{Observation 2.} For 3×n boards with n ≥ 4 the computed values
+satisfy a(3,n) = n+2 for every n from 4 to 18.
+
+\textbf{Proposition 3 (computer-checked construction).} For n ≡ 2 (mod
+4), with n ≥ 6, the set
+
+S\_n = \{(x,y) : y ∈ \{0,2\}, x mod 4 ∈ \{0,1\}\}
+
+is admissible in the 3×n board and has n+2 points. We checked this by
+brute force for n = 6, 10, \ldots, 30. We did not write a general proof.
+
+\textbf{Theorem 4 (proved, see the three-row-boards paper
+(\texttt{paper/main.tex})).} For all n ≥ 4, a(3,n) = n+2. The upper
+bound is computer-assisted (a verified potential certificate on 443
+states); the lower bound is an explicit construction valid for all n.
+
+Both bounds for all n are now proved in the three-row-boards paper
+(\texttt{paper/main.tex}).
+
+\textbf{Remark on the 2-row pattern.} Restricting 3×n sets to rows 0 and
+2 reaches n+2 only when n ≡ 2 (mod 4). For n ≡ 0, 1, 3 (mod 4), the
+optimal sets use the middle row, so no single two-row pattern gives the
+general lower bound.
+
+\subsection{3. Method}\label{method}
+
+We model the problem as a constraint satisfaction problem. Each lattice
+point is a Boolean variable. For each right isosceles triple, we add the
+clause ``not all three points are chosen.'' We add the constraint that
+each 2×2 block holds at most two chosen points, which is valid by the
+argument in Theorem 1 and tightens the linear relaxation. We maximize
+the number of chosen points with Google OR-Tools CP-SAT on 2 CPU cores,
+with time limits from 60 to 300 seconds.
+
+Every reported solution was checked by an independent routine. That
+routine enumerates all triples and tests the right-isosceles condition
+directly, without using the solver's triangle list. All stored solutions
+for m ≤ 4, n ≤ 8 passed, as did the constructions in Theorem 1 and
+Proposition 3.
+
+\subsection{4. What is and isn't
+established}\label{what-is-and-isnt-established}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Proved:} Theorem 1 (both parts), with complete arguments.
+\item
+  \textbf{Computed exactly:} every entry in the table marked OPTIMAL in
+  the solver output, i.e.~all of m ≤ 2 up to the displayed range, m = 3
+  with n ≤ 18, m = 4 with n ≤ 14, and m = 5 with n ≤ 12. These are
+  finite computations, not general proofs.
+\item
+  \textbf{Not established:} a closed form for m ≥ 4, and the values of
+  the m = 4 and m = 5 rows beyond the table. The m = 3 closed form is
+  now proved in the three-row-boards paper (\texttt{paper/main.tex}).
+\item
+  \textbf{Asymptotics:} we do not address growth in n.~The square-grid
+  literature (Károlyi--Solymosi, arXiv:2607.22828, 2026) gives F(n) =
+  Ω(n\^{}1.3) and F(n) ≪ n²/(log n)\^{}(1+c) for the square problem.
+  Rectangular boards with fixed m are a different regime.
+\end{itemize}
+
+\subsection{5. Novelty}\label{novelty}
+
+We searched OEIS for right-isosceles-triangle subsets of rectangular
+grids. The only related entry we found was A271906, which covers square
+grids n×n with n ≤ 11, and no rectangular table. We did not search the
+broader combinatorics literature. Theorem 1 is elementary, and it is
+quite possible that it appears in the literature on the square-grid
+problem or on rectangular board problems, so we make no novelty claim
+for it. The computed table is the most likely new contribution, but that
+is contingent on a fuller literature check.
+
+\subsection{6. Reproducibility}\label{reproducibility}
+
+Code and data are in \texttt{./}:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{rect.py}: triangle enumeration and CP-SAT model for m×n
+  boards.
+\item
+  \texttt{rect2.py}: runs for the larger boards.
+\item
+  \texttt{rect\_4x8.json}, \texttt{rect\_more.json}: solver output.
+\item
+  \texttt{verify.py}: independent checker (square grids; the rectangular
+  checks used the same triple test).
+\end{itemize}
+
+\end{document}
